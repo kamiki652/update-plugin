@@ -2,66 +2,79 @@
 /**
  * Plugin Name:       Update Plugin (最小構成)
  * Description:       WordPressプラグインの最小構成テンプレートです。
- * Version:           1.2.0
+ * Version:           1.0.0
  * Author:            kamiki652
  * Text Domain:       update-plugin
  */
 
-
-// 直接アクセスされた場合は処理を中断する（セキュリティ対策）
+// セキュリティ対策：直接アクセスを禁止
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// 定数の定義
-if ( ! defined( 'UPDATE_PLUGIN_VERSION' ) ) {
-	define( 'UPDATE_PLUGIN_VERSION', '1.2.0' );
-}
-
-// 自動更新ライブラリの読み込みと初期化
-if ( file_exists( __DIR__ . '/libs/plugin-update-checker/plugin-update-checker.php' ) ) {
-	require_once __DIR__ . '/libs/plugin-update-checker/plugin-update-checker.php';
-
-	$myUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-		'https://github.com/kamiki652/update-plugin/',
-		__FILE__,
-		'update-plugin'
-	);
+// プラグインのバージョン定義
+if ( ! defined( 'UP_MINIMAL_VERSION' ) ) {
+	define( 'UP_MINIMAL_VERSION', '1.0.0' );
 }
 
 /**
- * 管理画面にメニューを追加
+ * 自動更新機能（plugin-update-checker）の初期化
+ * 
+ * プラグインが読み込まれた後に実行されるように hooks を利用します。
  */
-add_action( 'admin_menu', function() {
-	add_menu_page(
-		'Update Plugin',              // ページタイトル
-		'Update Plugin',              // メニュータイトル
-		'manage_options',             // 権限
-		'update-plugin-settings',     // メニュースラグ
-		'update_plugin_render_page',  // 表示用関数
-		'dashicons-cloud-upload',     // アイコン
-		100                           // 位置
-	);
+add_action( 'plugins_loaded', function() {
+	$library_path = __DIR__ . '/libs/plugin-update-checker/plugin-update-checker.php';
+
+	if ( file_exists( $library_path ) ) {
+		require_once $library_path;
+
+		// GitHubリポジトリとの連携設定
+		// 正確な名前空間を使用し、URL末尾のスラッシュを除去して解析エラーを防止します。
+		$update_checker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+			'https://github.com/kamiki652/update-plugin',
+			__FILE__,
+			'update-plugin'
+		);
+	}
 } );
 
 /**
- * バージョン表示ページの内容を描画
+ * 管理画面へのメニュー追加
  */
-function update_plugin_render_page() {
+add_action( 'admin_menu', 'up_min_add_admin_menu' );
+function up_min_add_admin_menu() {
+	add_menu_page(
+		'Update Plugin',              // ページタイトル
+		'Update Plugin',              // メニュータイトル
+		'manage_options',             // 権限許可
+		'update-plugin-admin',        // メニュースラグ
+		'up_min_render_admin_page',   // 表示用関数
+		'dashicons-cloud-upload',     // アイコン
+		100                           // 表示順
+	);
+}
+
+/**
+ * バージョン管理ページの描画
+ */
+function up_min_render_admin_page() {
 	?>
 	<div class="wrap">
 		<h1>Update Plugin 管理</h1>
-		<div class="card" style="max-width: 400px; padding: 20px; margin-top: 20px;">
-			<h2 style="margin-top: 0;">ステータス</h2>
-			<p>バージョン情報を確認できます。</p>
-			<hr>
-			<p style="font-size: 1.2em;">
-				<strong>現在のバージョン:</strong> 
-				<span style="color: #0073aa; font-weight: bold;"><?php echo esc_html( UPDATE_PLUGIN_VERSION ); ?></span>
+		<div class="card" style="max-width: 450px; padding: 20px; margin-top: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+			<h2 style="margin-top: 0; color: #1d2327;">現在のステータス</h2>
+			<p>GitHub リポジトリ（kamiki652/update-plugin）と連携して自動更新をチェックしています。</p>
+			<hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+			<p style="font-size: 1.1em;">
+				<strong>プラグインバージョン:</strong> 
+				<span style="color: #2271b1; font-weight: bold; background: #f0f6fb; padding: 2px 8px; border-radius: 4px;">
+					<?php echo esc_html( UP_MINIMAL_VERSION ); ?>
+				</span>
 			</p>
 		</div>
-		<p>GitHubのリポジトリで新しいリリースが公開されると、自動的に更新通知が表示されます。</p>
+		<p style="color: #646970; margin-top: 15px;">
+			※ 新しいリリースがGitHubで公開されると、WordPressの更新画面に通知が表示されます。
+		</p>
 	</div>
 	<?php
 }
-
