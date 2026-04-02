@@ -20,9 +20,8 @@ if ( ! defined( 'UPDATE_PLUGIN_VERSION' ) ) {
 // 自動更新ライブラリの読み込みと初期化
 if ( file_exists( __DIR__ . '/libs/plugin-update-checker/plugin-update-checker.php' ) ) {
 	require_once __DIR__ . '/libs/plugin-update-checker/plugin-update-checker.php';
-	use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
-	$myUpdateChecker = PucFactory::buildUpdateChecker(
+	$myUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
 		'https://github.com/kamiki652/update-plugin/',
 		__FILE__,
 		'update-plugin'
