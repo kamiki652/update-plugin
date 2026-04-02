@@ -12,6 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// 自動更新ライブラリの読み込みと初期化
+require_once __DIR__ . '/libs/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+	'https://github.com/kamiki652/update-plugin/',
+	__FILE__, // フルパス
+	'update-plugin' // スラグ名
+);
+
 /**
  * 動作確認用：管理画面にメッセージを表示する
  */
