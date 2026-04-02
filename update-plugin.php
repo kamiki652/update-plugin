@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Update Plugin (最小構成)
  * Description:       WordPressプラグインの最小構成テンプレートです。
- * Version:           1.1.0
+ * Version:           1.2.0
  * Author:            kamiki652
  * Text Domain:       update-plugin
  */
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // 定数の定義
 if ( ! defined( 'UPDATE_PLUGIN_VERSION' ) ) {
-	define( 'UPDATE_PLUGIN_VERSION', '1.1.0' );
+	define( 'UPDATE_PLUGIN_VERSION', '1.2.0' );
 }
 
 // 自動更新ライブラリの読み込みと初期化
